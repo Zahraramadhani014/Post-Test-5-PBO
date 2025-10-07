@@ -415,14 +415,21 @@ Konsep Polymorphism dalam program ini muncul dalam dua bentuk yaitu Overriding d
 - `com.mycompany.posttest5pbo.jdbc.DB.java` → koneksi database manual
 
    <img width="1101" height="363" alt="image" src="https://github.com/user-attachments/assets/fbc3a3c7-12e7-497e-a869-ac824b5caf78" />
- 
+
+   >Bagian ini merujuk ke file com.mycompany.posttest5pbo.jdbc.DB.java. Di file tersebut, koneksi MySQL disiapkan secara manual: URL database, user, dan password disimpan sebagai konstanta, lalu driver MySQL dimuat ketika kelas pertama kali diinisialisasi. Setelah itu tersedia method get() yang bisa dipanggil kapan saja saat butuh koneksi—method ini mengembalikan objek Connection dari DriverManager. Koneksi dari DB.java inilah yang dipakai ShowTransaksiStatement.java untuk mengeksekusi query SELECT dan menampilkan tabel transaksi. Singkatnya, bagian ini menunjukkan penerapan JDBC murni di proyek, berjalan berdampingan dengan ORM/Hibernate.
+   
 - `com.mycompany.posttest5pbo.jdbc.ShowTransaksiStatement.java` → tampilkan data pakai `Statement`
   
   <img width="1387" height="803" alt="image" src="https://github.com/user-attachments/assets/3f2542f1-5a9e-4171-b9f3-307be38806fc" />
 
+  >Bagian ini menunjuk ke com.mycompany.posttest5pbo.jdbc.ShowTransaksiStatement.java. File tersebut menampilkan data transaksi langsung dari database menggunakan JDBC Statement. Alurnya: koneksi diambil dari DB.get(), query SELECT dijalankan pada tabel transaksi, hasilnya dibaca baris demi baris, lalu dicetak ke konsol sebagai tabel rapi (lengkap dengan header, garis pemisah, dan pemotongan teks keterangan jika terlalu panjang). Jika data kosong, akan muncul pesan “Belum ada data transaksi”. Intinya, file ini menjadi contoh penerapan JDBC murni (tanpa ORM) untuk membaca dan menampilkan data.
+
 - Dipanggil di `TransaksiService.lihatSemuaCatatan()`
 
   <img width="315" height="96" alt="image" src="https://github.com/user-attachments/assets/53af7f1f-b73d-41cc-b8d2-93a7107c2665" />
+
+  >Pada saat menu Lihat Semua Catatan dijalankan, bagian JDBC bekerja melalui pemanggilan ShowTransaksiStatement.showAll().
+Fungsi ini membuka koneksi ke MySQL dari DB.get(), membuat Statement, lalu mengeksekusi perintah SELECT untuk mengambil seluruh isi tabel transaksi. Setiap baris hasil query dibaca berurutan dan ditata sebagai tabel rapi di konsol—lengkap dengan header, garis pemisah, serta pemotongan teks keterangan bila terlalu panjang. Jika tidak ada data, muncul pesan “Belum ada data transaksi”. Setelah selesai, koneksi dan sumber daya JDBC ditutup otomatis. Singkatnya, tampilan daftar transaksi pada langkah ini diambil langsung dari database menggunakan JDBC murni, tanpa melibatkan ORM.
 
 
 #### Letak Penerapan ORM
@@ -430,20 +437,52 @@ Konsep Polymorphism dalam program ini muncul dalam dua bentuk yaitu Overriding d
   
   <img width="754" height="878" alt="image" src="https://github.com/user-attachments/assets/1b0034af-7564-4d0f-8102-04cdf2bf8c37" />
 
+  >Bagian ini menunjuk ke com.mycompany.posttest5pbo.orm.entity.TransaksiEntity.java. Ini adalah class entity yang dipakai Hibernate untuk memetakan tabel transaksi ke objek Java. Anotasi @Entity dan @Table(name = "transaksi") mengikat class ke tabel. Setiap kolom didefinisikan lewat @Column (mis. tanggal, keterangan, kategori, metodePembayaran, jumlah). Kolom kunci utama diberi @Id dengan @GeneratedValue(strategy = GenerationType.IDENTITY). Field jenis menggunakan enum JenisTransaksi { Pemasukan, Pengeluaran } dan dipetakan sebagai string (@Enumerated(EnumType.STRING)) agar nilainya konsisten dengan tipe ENUM di MySQL. Dengan entity ini, Hibernate bisa melakukan CRUD tanpa SQL manual—struktur, tipe data, dan aturan kolom tersimpan di satu tempat sehingga akses database lebih rapi dan aman.
+  
 - `com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java` → CRUD pakai Hibernate Session
 
   <img width="845" height="860" alt="image" src="https://github.com/user-attachments/assets/a7ca102d-3bdb-4330-933f-89eb92ce8fdf" />
+
+  >Bagian ini menunjuk ke com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java. File ini adalah lapisan repository yang menangani operasi database dengan Hibernate Session. Di sini tersedia metode-metode CRUD:
+  >
+  >- findAll() untuk mengambil semua transaksi (diurutkan berdasarkan id),
+  >
+  >- findById(id) untuk mencari satu data,
+  >
+  >- insert(e) untuk menyimpan transaksi baru,
+  >
+  >- update(e) untuk mengubah data yang ada,
+  >
+  >- delete(e) untuk menghapus,
+  >
+  >- serta helper seperti sumByJenis(...) untuk menghitung total pemasukan/pengeluaran.
+  >
+  >Setiap operasi dibuka dalam Session dan dibungkus Transaction agar perubahan aman dan konsisten. Dengan repository ini, aplikasi tidak perlu menulis SQL manual—Hibernate yang mengurus interaksi ke tabel transaksi.
 
   
 - `com.mycompany.posttest5pbo.service.TransaksiService.java` → panggil method repository
 
   <img width="1029" height="861" alt="image" src="https://github.com/user-attachments/assets/174fcf5a-4724-4852-8b23-9a48ad3d3c72" />
 
+  >Bagian ini menunjuk ke com.mycompany.posttest5pbo.service.TransaksiService.java. TransaksiService adalah orchestrator aplikasi: semua aksi dari menu diarahkan ke sini, lalu diteruskan ke layer repository (Hibernate) atau util JDBC bila diperlukan. Di dalamnya ada:
+  >
+  >- Pemanggilan repository untuk CRUD: tambah transaksi, ubah, hapus, cari by id, dan ambil semua data.
+  >
+  >- Konversi Entity ↔ Model agar data dari Hibernate bisa ditampilkan rapi di konsol (termasuk enum JenisTransaksi).
+  >
+  >- Validasi & helper input (tanggal, angka, pilihan), formatter rupiah, dan util pencetak tabel agar output konsisten.
+  >
+  >- Fitur bisnis: ringkasan saldo (total pemasukan, total pengeluaran, selisih), filter per jenis/kategori/metode, pencarian pada keterangan, serta batas pengeluaran bulanan lengkap dengan peringatannya.
+  >
+  >- Pada menu “Lihat Semua Catatan”, service ini juga memanggil tampilan JDBC murni (ShowTransaksiStatement.showAll()) sebelum menampilkan kembali via ORM, sesuai kebutuhan tugas.
+  >
+  >- Singkatnya, TransaksiService menghubungkan antarmuka konsol (App.java) dengan database, mengelola aturan bisnis, dan menjaga alur input–proses–tampil tetap rapi.
   
 - `com.mycompany.posttest5pbo.orm1.HibernateUtil.java` → konfigurasi Hibernate
 
   <img width="1044" height="830" alt="image" src="https://github.com/user-attachments/assets/9172d501-aaaa-418a-8540-ba35a4a4fb2f" />
 
+  >Bagian ini menunjuk ke com.mycompany.posttest5pbo.orm1.HibernateUtil.java. HibernateUtil berperan sebagai pusat konfigurasi Hibernate. Di kelas ini dibuat satu SessionFactory (pola singleton) melalui method build() dengan langkah-langkah berikut: mengatur properti koneksi (driver MySQL, URL database, username, password), menentukan opsi Hibernate (dialect MySQL, show_sql=false, format_sql=true, dan hbm2ddl.auto=validate agar skema hanya divalidasi), lalu mendaftarkan entity TransaksiEntity. Setelah SessionFactory siap, method get() disediakan untuk mengaksesnya dari bagian lain aplikasi. Repository kemudian menggunakan SessionFactory ini untuk membuka Session dan menjalankan operasi CRUD ke tabel transaksi. Singkatnya, file ini adalah gerbang ORM yang menyiapkan koneksi dan aturan Hibernate agar seluruh akses database berjalan rapi dan konsisten.
 
 #### File Database
 
@@ -451,7 +490,9 @@ Konsep Polymorphism dalam program ini muncul dalam dua bentuk yaitu Overriding d
 
 <img width="1218" height="454" alt="image" src="https://github.com/user-attachments/assets/387b8589-2318-434e-a802-7b6aede778e8" />
 
-
+>Tangkapan layar ini memperlihatkan tabel transaksi di database pocket_guard. Strukturnya sederhana: ada id sebagai kunci utama yang auto-increment, lalu tanggal, keterangan, jenis, kategori, metode, dan jumlah. Kolom jenis dibuat ENUM berisi “Pemasukan” atau “Pengeluaran”, sedangkan jumlah bertipe desimal agar perhitungan uang tetap presisi. Semua kolom diset NOT NULL, jadi setiap baris wajib lengkap.
+>
+>Di bawahnya terlihat contoh data nyata—gaji bulanan sebagai pemasukan, beberapa pengeluaran seperti makan, transportasi, hingga isi saldo tabungan. Kombinasi jenis, kategori, dan metode inilah yang kemudian dimanfaatkan aplikasi untuk fitur filter, ringkasan saldo, dan batas pengeluaran. Skema ini juga cocok dengan entity Hibernate (TransaksiEntity): id di-generate otomatis, jenis dipetakan sebagai enum string, dan jumlah disimpan sebagai BigDecimal.
 
 ### ~ Penjelasan Alur Program (Output Program)  ~
 
