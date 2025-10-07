@@ -413,20 +413,46 @@ Konsep Polymorphism dalam program ini muncul dalam dua bentuk yaitu Overriding d
 
 #### Letak Penerapan JDBC
 - `com.mycompany.posttest5pbo.jdbc.DB.java` → koneksi database manual
+
    <img width="1101" height="363" alt="image" src="https://github.com/user-attachments/assets/fbc3a3c7-12e7-497e-a869-ac824b5caf78" />
  
-- `com.mycompany.posttest5pbo.jdbc.ShowTransaksiStatement.java` → tampilkan data pakai `Statement`  
+- `com.mycompany.posttest5pbo.jdbc.ShowTransaksiStatement.java` → tampilkan data pakai `Statement`
+  
+  <img width="1387" height="803" alt="image" src="https://github.com/user-attachments/assets/3f2542f1-5a9e-4171-b9f3-307be38806fc" />
+
 - Dipanggil di `TransaksiService.lihatSemuaCatatan()`
 
+  <img width="315" height="96" alt="image" src="https://github.com/user-attachments/assets/53af7f1f-b73d-41cc-b8d2-93a7107c2665" />
+
+
 #### Letak Penerapan ORM
-- `com.mycompany.posttest5pbo.orm.entity.TransaksiEntity.java` → class entity dengan anotasi `@Entity`  
-- `com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java` → CRUD pakai Hibernate Session  
-- `com.mycompany.posttest5pbo.service.TransaksiService.java` → panggil method repository  
+- `com.mycompany.posttest5pbo.orm.entity.TransaksiEntity.java` → class entity dengan anotasi `@Entity`
+  
+  <img width="754" height="878" alt="image" src="https://github.com/user-attachments/assets/1b0034af-7564-4d0f-8102-04cdf2bf8c37" />
+
+- `com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java` → CRUD pakai Hibernate Session
+
+  <img width="845" height="860" alt="image" src="https://github.com/user-attachments/assets/a7ca102d-3bdb-4330-933f-89eb92ce8fdf" />
+
+  
+- `com.mycompany.posttest5pbo.service.TransaksiService.java` → panggil method repository
+
+  <img width="1029" height="861" alt="image" src="https://github.com/user-attachments/assets/174fcf5a-4724-4852-8b23-9a48ad3d3c72" />
+
+  
 - `com.mycompany.posttest5pbo.orm1.HibernateUtil.java` → konfigurasi Hibernate
 
+  <img width="1044" height="830" alt="image" src="https://github.com/user-attachments/assets/9172d501-aaaa-418a-8540-ba35a4a4fb2f" />
+
+
 #### File Database
-- File SQL: `pocket_guard.sql`
-    
+
+<img width="1094" height="303" alt="image" src="https://github.com/user-attachments/assets/14a5215a-8ec8-4f4a-b1e8-1d9fa860a716" />
+
+<img width="1218" height="454" alt="image" src="https://github.com/user-attachments/assets/387b8589-2318-434e-a802-7b6aede778e8" />
+
+
+
 ### ~ Penjelasan Alur Program (Output Program)  ~
 
 <h1 align="center"><img width="369" height="306" alt="image" src="https://github.com/user-attachments/assets/9aaa0cd6-68b4-4dd0-903c-988aa4aedf47" /></h1>
