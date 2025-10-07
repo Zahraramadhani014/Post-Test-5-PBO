@@ -36,16 +36,32 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
    a. Class App.Java yang terdapat di Package main
 
       <img width="328" height="49" alt="image" src="https://github.com/user-attachments/assets/6d62241d-7bb1-419c-aee9-485256ea2794" />
+      
 
       <img width="603" height="953" alt="image" src="https://github.com/user-attachments/assets/0cc18f75-b586-467b-a369-212466ceeee2" />
 
-      >App.java berperan sebagai pintu masuk program dan berada di paket com.mycompany.posttest5pbo.main. Saat dijalankan, method main membuat objek TransaksiService lalu memanggil seed untuk mengisi data contoh sehingga setiap menu bisa langsung dicoba tanpa harus mengetik data dari awal. Setelah inisialisasi selesai, layar konsol menampilkan judul aplikasi diikuti daftar pilihan yang rapi. Seluruh interaksi dibaca dari keyboard dan nilai yang masuk diproses satu per satu agar alur tetap terkendali.
+      >App.java berperan sebagai pintu masuk utama program dan berada di paket com.mycompany.posttest5pbo.main. Saat dijalankan, method main() membuat objek TransaksiService yang menjadi penghubung antara lapisan tampilan (menu konsol) dengan database. Berbeda dari versi sebelumnya yang memakai data statis di kode, kini semua data transaksi dibaca langsung dari database MySQL menggunakan kombinasi JDBC dan ORM (Hibernate). Dengan cara ini, data lebih terstruktur, tersimpan permanen, dan bisa diubah tanpa mengedit program.
       >
-      >Pengambilan angka menu ditangani oleh SafeInput.safeNextInt. Kelas kecil ini membungkus Scanner dan akan terus meminta masukan sampai terbaca bilangan yang sah. Cara ini efektif mencegah NumberFormatException dan menjaga aplikasi tetap stabil meskipun terjadi salah ketik atau spasi berlebih. Nilai yang sudah valid diteruskan ke blok switch. Setiap nomor menu langsung dipetakan ke metode pada TransaksiService. Pilihan tambah catatan membuka proses pengisian transaksi baru. Pilihan lihat menampilkan tabel seluruh catatan. Pilihan ubah mengarahkan ke proses pemilihan ID lalu mengganti atribut yang diinginkan. Pilihan hapus menyiapkan konfirmasi sebelum data benar benar dihapus. Pilihan ringkasan menghitung pemasukan, pengeluaran, dan saldo. Pilihan filter membawa ke sub menu untuk penyaringan berdasarkan jenis, kategori, metode pembayaran, serta pencarian keterangan. Pilihan set batas pengeluaran menyimpan angka plafon bulanan dan memunculkan peringatan bila akumulasi pengeluaran melewati batas.
+      >Ketika program dimulai, layar konsol menampilkan judul aplikasi Pocket Guard dan daftar menu utama. Seluruh interaksi pengguna berlangsung lewat keyboard. Input angka menu ditangani oleh kelas pembantu SafeInput.safeNextInt(), yang terus meminta input sampai pengguna memasukkan nilai numerik yang valid. Teknik ini mencegah kesalahan pembacaan angka dan menjaga kestabilan program walaupun terjadi salah ketik.
+      >Setiap pilihan menu langsung diarahkan ke metode yang sesuai di TransaksiService.
+      > - Tambah catatan keuangan membuka proses pengisian transaksi baru yang kemudian disimpan ke database melalui Hibernate.
+      >   
+      > - Lihat semua catatan menampilkan isi tabel transaksi, memanggil class ShowTransaksiStatement untuk menampilkan data dengan Statement (JDBC) sekaligus menampilkan ulang hasilnya lewat ORM.
+      >   
+      > - Ubah catatan memungkinkan pengguna memilih ID transaksi dari database, mengganti isinya, dan menyimpannya kembali dengan repo.update().
+      >   
+      > - Hapus catatan menyiapkan konfirmasi sebelum menjalankan repo.delete().
+      >   
+      > - Ringkasan saldo menghitung total pemasukan dan pengeluaran dengan repo.sumByJenis(), lalu menampilkan hasilnya di konsol.
+      >   
+      > - Filter dan search menjalankan query dinamis untuk menampilkan transaksi berdasarkan jenis, kategori, metode, atau kata kunci tertentu.
+      >   
+      > - Set batas pengeluaran menyimpan angka plafon bulanan yang dibandingkan dengan total pengeluaran di database.
       >
-      >Perulangan disusun dengan pola do while sehingga menu selalu kembali muncul setelah satu aksi selesai. Program hanya berhenti ketika opsi keluar dipilih. Jika angka yang dimasukkan di luar rentang, blok default pada switch menampilkan pesan bahwa pilihan tidak valid lalu alur dikembalikan ke menu utama tanpa menghentikan proses. Di bagian penutup, App.java menampilkan ucapan terima kasih dan mengakhiri eksekusi dengan rapi.
       >
-      >Peran App.java sengaja dibuat ringan. Seluruh perhitungan dan aturan bisnis ditempatkan di TransaksiService, sedangkan App.java fokus pada pengendalian alur, tampilan menu, dan validasi input dasar. Pemisahan ini membuat kode mudah dibaca serta mudah dirawat. Penambahan fitur baru cukup dilakukan di lapisan service tanpa mengubah struktur App.java. Desain seperti ini juga memudahkan pengujian karena logika inti terkumpul pada satu tempat. Alur kerjanya jelas sejak awal hingga akhir, program dibuat, service diinisialisasi, data contoh diisi, menu muncul, sebuah pilihan diproses, hasilnya ditampilkan, lalu kontrol kembali ke menu sampai akhirnya dipilih keluar.
+      > Program berjalan dalam loop do-while, sehingga menu utama akan selalu tampil ulang setelah setiap aksi selesai dilakukan. Proses hanya berhenti jika pengguna memilih opsi keluar. Bila input tidak valid, pesan kesalahan ditampilkan dan pengguna dikembalikan ke menu utama tanpa menghentikan program.
+      >
+      > Secara keseluruhan, App.java berperan sebagai pengatur alur utama dan antarmuka teks, sedangkan logika CRUD dan interaksi database sepenuhnya ditangani oleh TransaksiService. Pembagian ini membuat struktur program lebih bersih, modular, dan mudah dikembangkan. Aplikasi dimulai dari App.java, data dibaca dan dikelola oleh Hibernate, dan hasilnya langsung ditampilkan di layar dalam format tabel yang rapi.
 
    b. Class Transaksi.Java yang terdapat di Package model
 
@@ -84,6 +100,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
    e. Class SaldoEffect.Java yang terdapat di Package model
 
       <img width="349" height="113" alt="image" src="https://github.com/user-attachments/assets/bbbc5b5b-3912-4bab-bf7a-a381c89c71de" />
+      
 
       <img width="573" height="167" alt="image" src="https://github.com/user-attachments/assets/4e4f07e8-4652-4372-a376-1fce1639023b" />
 
@@ -100,13 +117,24 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
      <img width="1034" height="938" alt="image" src="https://github.com/user-attachments/assets/ca2767fa-c3c8-4c9d-aa3e-77b73645ca6a" />
 
      
-     >TransaksiService berada pada lapisan service dan memegang seluruh logika bisnis aplikasi. Di dalamnya tersimpan koleksi List<Transaksi> yang menampung objek Pemasukan dan Pengeluaran serta disediakan method seed untuk mengisi data awal. Kelas ini menyediakan operasi inti yang lengkap seperti menambah catatan baru, menampilkan seluruh catatan dalam bentuk tabel, mengubah catatan berdasarkan ID, menghapus catatan dengan konfirmasi, menampilkan ringkasan saldo, dan menyetel batas pengeluaran bulanan. Saat menghitung ringkasan, perhitungan memanfaatkan polimorfisme melalui pemanggilan efekSaldo pada setiap elemen daftar sehingga Pemasukan otomatis bernilai positif dan Pengeluaran otomatis bernilai negatif. Dengan cara ini perhitungan selesai tanpa percabangan tambahan.
+     >TransaksiService berada pada lapisan service dan memegang seluruh logika bisnis aplikasi. Kelas ini berfungsi sebagai penghubung antara antarmuka pengguna (App.java) dengan database. Semua proses CRUD (Create, Read, Update, Delete) dilakukan melalui objek TransaksiRepository, yang berisi operasi Hibernate terhadap tabel transaksi.
      >
-     >Antarmuka konsol dibuat rapi dengan beberapa utilitas tampilan seperti header judul dan pemformat angka rupiah. Supaya input aman, tersedia rangkaian helper yang menangani validasi. Method inputWajib memastikan kolom tidak kosong. Method inputTanggalWajib memeriksa format tanggal menggunakan regex agar sesuai standar tahun bulan hari. Method inputPilihanWajib membatasi nilai hanya pada opsi yang diizinkan. Method inputDoubleWajib dan inputDoubleNonNegatif memverifikasi angka agar tidak terjadi kesalahan dan tidak bernilai negatif. Untuk proses ubah, tersedia versi opsional yaitu inputStringOpsional dan inputDoubleOpsional yang mengizinkan menekan Enter untuk mempertahankan nilai lama. Pembacaan angka menu ditangani safeNextInt sehingga salah ketik tidak menimbulkan NumberFormatException. Pencarian entitas dilakukan melalui findById, sedangkan garis dan formatRupiah membantu saat mencetak tabel transaksi.
+     >Setiap catatan keuangan, baik Pemasukan maupun Pengeluaran, disimpan sebagai entitas TransaksiEntity di database. Ketika pengguna menambah catatan baru, data dikonversi dari input teks menjadi objek entity, lalu disimpan ke MySQL lewat repo.insert(). Proses ubah dan hapus juga dilakukan secara langsung melalui repo.update() dan repo.delete(). Dengan penerapan ORM ini, program tidak lagi menggunakan List di memori, melainkan langsung membaca dan menulis ke tabel pada database.
      >
-     >Menu filter dan pencarian ditempatkan dalam satu tempat sehingga mudah dijangkau. Data dapat disaring berdasarkan jenis, kategori, atau metode pembayaran, dan tersedia pencarian teks pada kolom keterangan. Jika total pengeluaran melebihi batas yang disetel, layanan menampilkan peringatan sehingga kondisi anggaran terlihat jelas. Sebagai sentuhan OOP tambahan, method tampilkanTabel dibuat dalam dua versi yang memiliki nama sama. Satu versi tanpa parameter untuk menampilkan seluruh daftar, sedangkan versi lain menerima List<Transaksi> untuk menampilkan hasil filter atau pencarian. Inilah bentuk overloading yang sederhana namun efektif karena menghindari duplikasi logika cetak.
+     >Perhitungan ringkasan saldo memanfaatkan fungsi sumByJenis() di repository. Method ini memakai query Hibernate dengan parameter bertipe enum (TransaksiEntity.JenisTransaksi) untuk menghitung total pemasukan dan pengeluaran secara terpisah. Nilai hasil query kemudian dikonversi menjadi double agar mudah digunakan di bagian tampilan. Dengan pendekatan ini, semua operasi aritmatika sepenuhnya didasarkan pada data nyata di database, bukan nilai sementara di memori.
      >
-     >Secara keseluruhan, TransaksiService menjadi penghubung utama antara kelas App yang menampilkan menu dengan struktur data pada paket model. Validasi berjalan konsisten, keluaran tabel rapi, serta aturan bisnis tersentral sehingga kode mudah dipelihara dan siap diperluas ketika diperlukan.
+     >Antarmuka konsol diatur agar tetap mudah dibaca. Beberapa helper method seperti inputWajib(), inputTanggalWajib(), dan inputPilihanWajib() digunakan untuk validasi input pengguna agar sesuai format dan tidak kosong. Method inputDoubleWajib() dan inputDoubleNonNegatif() memastikan nilai yang dimasukkan berupa angka dan tidak negatif. Semua input yang diterima akan dikonversi dan disimpan dalam bentuk entity agar konsisten dengan struktur tabel di database.
+     >
+     >Selain CRUD, kelas ini juga menyediakan fitur tambahan:
+     >- Filter dan Search, untuk menampilkan data berdasarkan jenis, kategori, metode pembayaran, atau kata kunci tertentu di kolom keterangan.
+     >
+     >- Set Batas Pengeluaran, yang menyimpan plafon bulanan dan menampilkan peringatan apabila total pengeluaran melebihi batas tersebut.
+     >
+     >- Tabel Ringkasan, yang menampilkan daftar transaksi lengkap dalam format tabel rapi dengan bantuan formatter untuk nilai Rupiah.
+     >
+     >Kelas ini juga memanggil ShowTransaksiStatement dari paket JDBC sebagai bentuk penerapan ganda antara ORM dan Statement. Hal ini dilakukan pada menu “Lihat Semua Catatan”, agar pengguna dapat melihat bahwa data bisa diambil baik dengan ORM maupun perintah SQL langsung.
+     >
+     >Secara keseluruhan, TransaksiService berperan sebagai jembatan utama antara antarmuka konsol (App.java) dan sistem penyimpanan database. Seluruh aturan bisnis, validasi, dan perhitungan ditempatkan di sini agar kode tetap terorganisir. Dengan arsitektur ini, aplikasi menjadi modular, mudah dirawat, dan siap dikembangkan lebih lanjut tanpa mengubah struktur utama program.
 
    g. Class DB.Java yang terdapat di Packages jdbc
 
@@ -114,7 +142,12 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
       <img width="1126" height="420" alt="image" src="https://github.com/user-attachments/assets/67a825a7-68b6-4691-8425-89bf8b32b201" />
 
+      >DB.java berfungsi untuk mengatur koneksi JDBC ke database MySQL.
+File ini menyimpan tiga informasi penting yaitu URL database, username, dan password. Pada bagian static, program mencoba memuat driver MySQL menggunakan Class.forName(). Kalau driver tidak ditemukan, sistem akan menampilkan pesan error agar mudah dilacak.
       >
+      >Method get() digunakan setiap kali program butuh koneksi ke database. Ia memanggil DriverManager.getConnection() dan mengembalikan objek Connection yang siap dipakai untuk menjalankan perintah SQL.
+      >
+      >Secara sederhana, DB.java adalah pintu utama untuk menghubungkan program dengan database sebelum data bisa dibaca atau ditulis lewat JDBC.
       
    h. Class ShowTransaksiStatement.Java yang terdapat di Package jdbc
 
@@ -122,7 +155,13 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
       <img width="1357" height="808" alt="image" src="https://github.com/user-attachments/assets/2f4cd5f9-ec9f-4b7b-82e5-13c8c189cf48" />
 
+      >ShowTransaksiStatement.java dipakai untuk menampilkan data transaksi langsung dari database menggunakan JDBC dan Statement.
       >
+      >Kelas ini menjalankan perintah SQL sederhana untuk mengambil semua isi tabel transaksi, lalu menampilkannya ke konsol dalam bentuk tabel yang rapi.
+      >
+      >Prosesnya dimulai dengan membuat koneksi lewat DB.get(), menjalankan query SELECT, lalu mencetak hasilnya baris per baris. Kalau datanya kosong, program akan menampilkan pesan “Belum ada data transaksi”.
+      >
+      >Fungsinya sederhana tapi penting: file ini menunjukkan penerapan JDBC murni di program, sebagai pelengkap dari bagian ORM yang memakai Hibernate.
 
    i. Class TransaksiEntity.Java yang terdapat di Package orm.entity
 
@@ -130,7 +169,13 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
       <img width="754" height="874" alt="image" src="https://github.com/user-attachments/assets/0eae36ac-1d43-4801-aaf2-5b8906453235" />
 
+      >TransaksiEntity.java merupakan class entity utama yang dipakai Hibernate untuk berhubungan langsung dengan tabel transaksi di database. File ini berisi struktur data yang menggambarkan satu baris data transaksi lengkap, mulai dari id, tanggal, keterangan, jenis, kategori, metodePembayaran, hingga jumlah.
       >
+      >Di bagian atas ada anotasi @Entity dan @Table(name = "transaksi") yang menandakan kalau class ini terhubung langsung dengan tabel bernama transaksi. Field jenis menggunakan enum JenisTransaksi dengan dua pilihan, yaitu Pemasukan dan Pengeluaran, supaya data lebih konsisten dan tidak bisa diisi sembarangan string.
+      >
+      >Setiap atribut punya anotasi seperti @Column, @Id, dan @GeneratedValue yang menjelaskan tipe kolom dan cara nilainya dibuat di database. Class ini juga menyediakan getter dan setter agar data bisa diakses dan dimodifikasi oleh bagian service atau repository.
+      >
+      >Secara singkat, TransaksiEntity berperan sebagai jembatan antara objek Java dan tabel di MySQL, sehingga Hibernate bisa melakukan CRUD otomatis tanpa perlu query SQL manual.
 
    j. Class TransaksiRepository.Java yang terdapat di Package orm.repo
 
@@ -138,7 +183,13 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
       <img width="792" height="861" alt="image" src="https://github.com/user-attachments/assets/dfb85724-8b13-429d-a59f-bcb39e8de307" />
 
+      >TransaksiRepository.java berfungsi sebagai penghubung langsung antara program dan database lewat Hibernate.
+Kelas ini menyediakan berbagai operasi dasar seperti menampilkan semua data (findAll()), mencari transaksi berdasarkan ID (findById()), menambah (insert()), mengubah (update()), dan menghapus data (delete()).
       >
+      >Setiap proses dijalankan di dalam Session yang dibuka dari HibernateUtil, lalu dibungkus dengan transaksi (Transaction) agar perubahan data aman dan konsisten.
+Dengan pendekatan ini, semua perintah SQL tidak perlu ditulis manual karena sudah diurus otomatis oleh Hibernate.
+      >
+      >Secara sederhana, TransaksiRepository ini adalah lapisan ORM yang mengatur interaksi CRUD antara objek Java (TransaksiEntity) dengan tabel transaksi di database MySQL.
 
    k. Class HibernateUtil yang terdapat di Package orm1
 
@@ -146,7 +197,20 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
       <img width="1024" height="813" alt="image" src="https://github.com/user-attachments/assets/bbc8f311-747f-4c7e-bfc1-51b1e1ce8bf4" />
 
+      >HibernateUtil.java berfungsi sebagai pengatur utama koneksi Hibernate ke database MySQL.
+File ini membuat satu objek SessionFactory yang dipakai bersama oleh seluruh bagian program untuk menjalankan operasi database tanpa perlu membuka koneksi baru setiap kali.
       >
+      >Di dalamnya, properti Hibernate diatur secara manual, seperti:
+      >- alamat database dan driver JDBC,
+      >
+      >- username dan password,
+      >
+      >- pengaturan tampilan SQL di konsol, dan
+      >
+      >- aturan agar Hibernate hanya memvalidasi struktur tabel tanpa membuat ulang.
+      >
+      >Kelas ini juga mendaftarkan entity TransaksiEntity, supaya Hibernate tahu tabel mana yang harus dikelola.
+Dengan adanya HibernateUtil, proses koneksi dan pengelolaan sesi database jadi lebih efisien, rapi, dan terpusat di satu tempat.
       
 3. Penjelasan packages yang ada di program "Pocket Guard"
    
@@ -154,7 +218,11 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
      
      <img width="315" height="23" alt="image" src="https://github.com/user-attachments/assets/8fc75f6e-6630-4bfe-ad1d-a7a2a52ce6a4" />
 
-     >Package ini memuat kelas utama App.java sebagai titik masuk aplikasi. Saat program dijalankan, method main menampilkan menu Pocket Guard, membaca input dari keyboard melalui utilitas SafeInput, kemudian mendelegasikan setiap pilihan ke TransaksiService untuk diproses. Di paket yang sama, SafeInput menjaga validasi angka sehingga alur tetap stabil meskipun terjadi salah ketik. Fokus paket main adalah antarmuka konsol dan pengendalian alur eksekusi, sementara seluruh aturan dan perhitungan bisnis ditempatkan di paket service agar tanggung jawab terpisah dengan jelas dan kode lebih mudah dirawat.
+     >Package ini berisi kelas utama App.java yang menjadi titik awal jalannya program Pocket Guard. Saat dijalankan, method main() menampilkan menu utama di konsol, membaca input dari pengguna melalui kelas SafeInput, lalu meneruskan pilihan menu ke TransaksiService untuk dijalankan.
+     >
+     >Pada versi ini, App.java sudah terhubung dengan database MySQL, sehingga semua data transaksi yang muncul di menu diambil langsung dari tabel, bukan lagi dari data statis di kode. SafeInput tetap berfungsi untuk menjaga agar input pengguna selalu valid dan tidak menyebabkan error saat program membaca angka atau teks.
+     >
+     >Secara keseluruhan, package ini berperan sebagai antarmuka interaktif antara pengguna dan sistem database, sementara logika bisnis dan pengolahan datanya dikelola di package service. Struktur seperti ini membuat program lebih teratur, mudah dirawat, dan sesuai dengan konsep pemisahan tanggung jawab (separation of concerns).
      
     - Package Model 
 
@@ -168,26 +236,53 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       
         <img width="330" height="23" alt="image" src="https://github.com/user-attachments/assets/5192bc88-94f4-403f-b320-c41ed76af194" />
         
-        >Package ini memuat logika bisnis aplikasi melalui kelas TransaksiService. Di dalamnya tersimpan daftar Transaksi berupa objek Pemasukan dan Pengeluaran serta method seed untuk menyiapkan data awal. TransaksiService menyediakan operasi inti seperti menambah data, menampilkan dalam tabel, mengubah berdasarkan ID, menghapus dengan konfirmasi, menampilkan ringkasan saldo melalui pemanggilan polimorfik efekSaldo, dan menyetel batas pengeluaran bulanan lengkap dengan peringatannya. Menu bantu mencakup filter per jenis, kategori, dan metode pembayaran, serta pencarian teks pada kolom keterangan.
+        >Package ini berisi logika utama aplikasi yang dijalankan melalui kelas TransaksiService. Di dalamnya, seluruh proses CRUD (Create, Read, Update, Delete) transaksi dilakukan secara langsung ke database menggunakan Hibernate sebagai ORM. Class ini menangani berbagai operasi seperti menambah catatan keuangan baru, menampilkan semua data dari tabel, mengubah data berdasarkan ID, menghapus data dengan konfirmasi, hingga menampilkan ringkasan saldo dengan perhitungan otomatis antara pemasukan dan pengeluaran.
         >
-        >Agar interaksi konsol tertata, disertakan berbagai helper untuk validasi input, format rupiah, serta tampilan header. Paket service berperan sebagai penghubung antara antarmuka konsol di App dan struktur data pada paket model, sehingga pemisahan tanggung jawab terasa jelas dan keseluruhan kode lebih mudah dikelola.
+        >Selain itu, TransaksiService juga mengatur batas pengeluaran bulanan dan menampilkan peringatan bila total pengeluaran melebihi limit. Fitur tambahan seperti filter dan pencarian disediakan untuk mempermudah pengguna menyaring data berdasarkan jenis transaksi, kategori, metode pembayaran, atau kata kunci pada keterangan.
+        >
+        >Package ini juga menyediakan berbagai helper method untuk validasi input, format tampilan rupiah, serta tata letak tabel di konsol. Secara keseluruhan, package service menjadi penghubung antara antarmuka di App.java dengan database, sehingga struktur kode lebih terpisah, rapi, dan mudah dikelola.
 
     - Package JDBC
       
          <img width="294" height="25" alt="image" src="https://github.com/user-attachments/assets/8bfa9cda-8744-432b-b7ee-118c18e3b049" />
 
+         >Package jdbc berisi kelas yang berhubungan langsung dengan koneksi dan pengambilan data dari database menggunakan JDBC murni.
+         >
+         >Di dalamnya terdapat dua file utama:
+         >
+         >- DB.java, yang bertugas membuka koneksi ke database MySQL menggunakan DriverManager.
+         >
+         >- ShowTransaksiStatement.java, yang menampilkan data transaksi langsung dari tabel transaksi memakai perintah Statement dan query SQL.
+         >-
+         >Package ini menjadi contoh penerapan akses database tanpa ORM, di mana data diambil dan ditampilkan secara manual menggunakan perintah SQL.
+Bagian JDBC ini melengkapi bagian ORM (Hibernate) dengan menunjukkan bagaimana sistem tetap bisa membaca data langsung dari database dengan cara yang lebih dasar.
+
     - Package ORM.Entity
   
          <img width="349" height="24" alt="image" src="https://github.com/user-attachments/assets/14c6de4f-c173-45dc-95a9-549531b148a3" />
+
+         >Package orm.entity berisi class-class entity yang digunakan Hibernate untuk memetakan tabel di database menjadi objek Java. Di dalamnya terdapat TransaksiEntity.java, yang mewakili tabel transaksi lengkap dengan kolom seperti id, tanggal, keterangan, jenis, kategori, metodePembayaran, dan jumlah.
+         >
+         >Setiap atribut diatur menggunakan anotasi seperti @Entity, @Table, dan @Column agar Hibernate tahu struktur tabel di MySQL. Selain itu, ada juga enum JenisTransaksi yang membatasi nilai kolom jenis hanya pada dua pilihan: Pemasukan atau Pengeluaran.
+         >
+         >Package ini menjadi dasar utama dari bagian ORM karena semua operasi Hibernate mengacu pada entity ini saat melakukan proses CRUD ke database.
 
     - Package ORM.Repo
   
          <img width="348" height="26" alt="image" src="https://github.com/user-attachments/assets/a56289fe-9724-4c58-a346-368625597b09" />
 
+         >Package orm.repo berfungsi sebagai lapisan akses data (repository) yang menghubungkan logika aplikasi dengan database melalui Hibernate. Di dalamnya terdapat TransaksiRepository.java, yang menangani seluruh operasi database seperti menampilkan semua data, mencari transaksi berdasarkan ID, menambah, mengubah, menghapus, serta menghitung total pemasukan dan pengeluaran.
+         >
+         >Kelas ini menggunakan Session dan Transaction dari Hibernate untuk menjalankan perintah SQL secara otomatis tanpa harus menulis query manual.
+Dengan adanya package repository ini, proses pengelolaan data jadi lebih terstruktur, efisien, dan mudah dipanggil oleh TransaksiService di lapisan service.
+         
     - Package ORM1
 
          <img width="325" height="22" alt="image" src="https://github.com/user-attachments/assets/d3d34ae9-ceaf-47a2-89bc-58b5527c4b71" />
-
+         
+         >Package orm1 berisi kelas pendukung utama untuk konfigurasi Hibernate, yaitu HibernateUtil.java. Kelas ini bertugas menyiapkan koneksi Hibernate ke database MySQL dengan mengatur properti seperti driver, URL, username, dan password secara langsung melalui kode.
+         >
+         >Selain itu, HibernateUtil juga mendaftarkan entity TransaksiEntity agar bisa dikenali Hibernate saat proses CRUD dijalankan. Dengan adanya package ini, seluruh bagian ORM bisa berfungsi otomatis tanpa harus menulis file konfigurasi XML, sehingga proses koneksi ke database jadi lebih cepat, praktis, dan mudah dikelola.
 
 4. Penjelasan encapsulation (getter dan setter)
    
@@ -316,6 +411,21 @@ Konsep Polymorphism dalam program ini muncul dalam dua bentuk yaitu Overriding d
 - Perhitungan saldo via interface: `TransaksiService.ringkasanSaldo()`.
   >Total saldo dihitung dengan menjumlahkan efekSaldo() pada setiap elemen daftar. Karena efekSaldo() datang dari kontrak interface, Pemasukan otomatis positif dan Pengeluaran otomatis negatif tanpa if else.
 
+#### Letak Penerapan JDBC
+- `com.mycompany.posttest5pbo.jdbc.DB.java` → koneksi database manual
+   <img width="1101" height="363" alt="image" src="https://github.com/user-attachments/assets/fbc3a3c7-12e7-497e-a869-ac824b5caf78" />
+ 
+- `com.mycompany.posttest5pbo.jdbc.ShowTransaksiStatement.java` → tampilkan data pakai `Statement`  
+- Dipanggil di `TransaksiService.lihatSemuaCatatan()`
+
+#### Letak Penerapan ORM
+- `com.mycompany.posttest5pbo.orm.entity.TransaksiEntity.java` → class entity dengan anotasi `@Entity`  
+- `com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java` → CRUD pakai Hibernate Session  
+- `com.mycompany.posttest5pbo.service.TransaksiService.java` → panggil method repository  
+- `com.mycompany.posttest5pbo.orm1.HibernateUtil.java` → konfigurasi Hibernate
+
+#### File Database
+- File SQL: `pocket_guard.sql`
     
 ### ~ Penjelasan Alur Program (Output Program)  ~
 
