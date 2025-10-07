@@ -33,7 +33,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
 
 1. Penjelasan class yang ada di program "Pocket Guard"
    
-   a. Class App.Java yang terdapat di Packages Main
+   a. Class App.Java yang terdapat di Package main
    
       <img width="331" height="44" alt="image" src="https://github.com/user-attachments/assets/9c8671df-aa36-41fe-9192-2b3d77087926" />
 
@@ -47,7 +47,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       >
       >Peran App.java sengaja dibuat ringan. Seluruh perhitungan dan aturan bisnis ditempatkan di TransaksiService, sedangkan App.java fokus pada pengendalian alur, tampilan menu, dan validasi input dasar. Pemisahan ini membuat kode mudah dibaca serta mudah dirawat. Penambahan fitur baru cukup dilakukan di lapisan service tanpa mengubah struktur App.java. Desain seperti ini juga memudahkan pengujian karena logika inti terkumpul pada satu tempat. Alur kerjanya jelas sejak awal hingga akhir: program dibuat, service diinisialisasi, data contoh diisi, menu muncul, sebuah pilihan diproses, hasilnya ditampilkan, lalu kontrol kembali ke menu sampai akhirnya dipilih keluar.
 
-   b. Class Transaksi.Java yang terdapat di Packages Model
+   b. Class Transaksi.Java yang terdapat di Package model
 
       <img width="332" height="115" alt="image" src="https://github.com/user-attachments/assets/19888393-0825-4799-b009-dc5324e0b25a" />
 
@@ -63,7 +63,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       >
       >Dengan demikian, Transaksi berfungsi ganda sebagai basis pewarisan dan sebagai wadah data yang terenkapsulasi. Struktur program menjadi rapi, aturan perhitungan saldo terkonsolidasi di satu tempat, dan kode mudah dipelihara karena tanggung jawab dipisahkan dengan jelas antara kelas induk dan kelas turunannya.
 
-   c. Class Pemasukan.Java yang terdapat di Packages Model
+   c. Class Pemasukan.Java yang terdapat di Package model
 
       <img width="332" height="115" alt="image" src="https://github.com/user-attachments/assets/0b43dcb2-197d-444c-b043-c153776644bd" />
 
@@ -71,7 +71,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       
       >Kelas Pemasukan berada di package model sebagai turunan dari Transaksi dan merepresentasikan transaksi berjenis pemasukan. Konstruktor langsung mengunci nilai jenis menjadi Pemasukan sekaligus meneruskan atribut lain ke kelas induk agar data tersusun lengkap sejak objek dibuat. Di dalamnya dilakukan overriding pada getJenis yang selalu mengembalikan teks Pemasukan, sedangkan setJenis dioverride menjadi tidak melakukan perubahan apa pun supaya identitas jenis tidak bisa diganti saat proses edit. Method abstrak tandaSaldo juga diisi dengan nilai positif satu yang menandakan efek penambahan terhadap saldo. Dengan susunan ini setiap objek Pemasukan tetap konsisten sebagai transaksi pemasukan dan otomatis dihitung bernilai positif ketika ringkasan saldo memanggil efekSaldo secara polimorfik.
       
-   d. Class Pengeluaran.Java yang terdapat di Packages Model
+   d. Class Pengeluaran.Java yang terdapat di Package model
 
       <img width="332" height="115" alt="image" src="https://github.com/user-attachments/assets/a878740f-0cc3-4502-85d2-96bcd4401439" />
 
@@ -81,7 +81,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       >
       >Dengan rancangan tersebut, setiap objek Pengeluaran konsisten sebagai transaksi pengeluaran dan otomatis berkontribusi negatif saat perhitungan ringkasan saldo melalui pemanggilan polimorfik efekSaldo. Pemisahan yang jelas antara Pemasukan dan Pengeluaran membuat perilaku tiap jenis transaksi tegas tanpa perlu percabangan tambahan di lapisan service, sehingga kode tetap rapi dan mudah dipelihara.
 
-   e. Class SaldoEffect.Java yang terdapat di Packages Model
+   e. Class SaldoEffect.Java yang terdapat di Package model
 
       <img width="354" height="114" alt="image" src="https://github.com/user-attachments/assets/b7fc5f3b-cea6-4946-b841-509664cb0aef" />
       
@@ -93,7 +93,7 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       >
       >Pendekatan ini menyederhanakan proses perhitungan ringkasan di TransaksiService. Daftar transaksi cukup dijumlahkan melalui pemanggilan efekSaldo pada tiap elemen dan hasilnya sudah benar tanpa perlu percabangan. Interface SaldoEffect memisahkan definisi apa yang harus tersedia dari cara mengerjakannya sehingga struktur kode rapi, mudah dirawat, dan siap diperluas bila kelak ditambahkan jenis transaksi lain.
       
-   f. Class TransaksiService.Java yang terdapat di Packages Service
+   f. Class TransaksiService.Java yang terdapat di Package service
 
      <img width="343" height="52" alt="image" src="https://github.com/user-attachments/assets/137a271d-7e35-4e0e-b586-ce8c51ef3573" />
 
@@ -106,7 +106,47 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
      >Menu filter dan pencarian ditempatkan dalam satu tempat sehingga mudah dijangkau. Data dapat disaring berdasarkan jenis, kategori, atau metode pembayaran, dan tersedia pencarian teks pada kolom keterangan. Jika total pengeluaran melebihi batas yang disetel, layanan menampilkan peringatan sehingga kondisi anggaran terlihat jelas. Sebagai sentuhan OOP tambahan, method tampilkanTabel dibuat dalam dua versi yang memiliki nama sama. Satu versi tanpa parameter untuk menampilkan seluruh daftar, sedangkan versi lain menerima List<Transaksi> untuk menampilkan hasil filter atau pencarian. Inilah bentuk overloading yang sederhana namun efektif karena menghindari duplikasi logika cetak.
      >
      >Secara keseluruhan, TransaksiService menjadi penghubung utama antara kelas App yang menampilkan menu dengan struktur data pada paket model. Validasi berjalan konsisten, keluaran tabel rapi, serta aturan bisnis tersentral sehingga kode mudah dipelihara dan siap diperluas ketika diperlukan.
-     
+
+   g. Class DB.Java yang terdapat di Packages jdbc
+
+      <img width="325" height="68" alt="image" src="https://github.com/user-attachments/assets/664ce0bc-7d12-4dac-8058-a4308c6df2f3" />
+
+      <img width="1126" height="420" alt="image" src="https://github.com/user-attachments/assets/67a825a7-68b6-4691-8425-89bf8b32b201" />
+
+      >
+      
+   h. Class ShowTransaksiStatement.Java yang terdapat di Package jdbc
+
+      <img width="327" height="67" alt="image" src="https://github.com/user-attachments/assets/0642b55f-a381-4dc1-832e-f8a777c32701" />
+
+      <img width="1357" height="808" alt="image" src="https://github.com/user-attachments/assets/2f4cd5f9-ec9f-4b7b-82e5-13c8c189cf48" />
+
+      >
+
+   i. Class TransaksiEntity.Java yang terdapat di Package orm.entity
+
+      <img width="359" height="38" alt="image" src="https://github.com/user-attachments/assets/cd6b6a9e-d595-46f3-be06-745e3f213b55" />
+
+      <img width="754" height="874" alt="image" src="https://github.com/user-attachments/assets/0eae36ac-1d43-4801-aaf2-5b8906453235" />
+
+      >
+
+   j. Class TransaksiRepository.Java yang terdapat di Package orm.repo
+
+      <img width="334" height="44" alt="image" src="https://github.com/user-attachments/assets/ea74326b-ce81-4a17-9cf1-74c94366126b" />
+
+      <img width="792" height="861" alt="image" src="https://github.com/user-attachments/assets/dfb85724-8b13-429d-a59f-bcb39e8de307" />
+
+      >
+
+   k. Class HibernateUtil yang terdapat di Package orm1
+
+      <img width="324" height="44" alt="image" src="https://github.com/user-attachments/assets/69480e86-69c7-48aa-aa69-da90e7d9648e" />
+
+      <img width="1024" height="813" alt="image" src="https://github.com/user-attachments/assets/bbc8f311-747f-4c7e-bfc1-51b1e1ce8bf4" />
+
+      >
+      
 2. Penjelasan packages yang ada di program "Pocket Guard"
    
    - Packages Main
