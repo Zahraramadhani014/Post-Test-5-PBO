@@ -38,6 +38,8 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
       <img width="328" height="49" alt="image" src="https://github.com/user-attachments/assets/6d62241d-7bb1-419c-aee9-485256ea2794" />
       
 
+
+
       <img width="603" height="953" alt="image" src="https://github.com/user-attachments/assets/0cc18f75-b586-467b-a369-212466ceeee2" />
 
       >App.java berperan sebagai pintu masuk utama program dan berada di paket com.mycompany.posttest5pbo.main. Saat dijalankan, method main() membuat objek TransaksiService yang menjadi penghubung antara lapisan tampilan (menu konsol) dengan database. Berbeda dari versi sebelumnya yang memakai data statis di kode, kini semua data transaksi dibaca langsung dari database MySQL menggunakan kombinasi JDBC dan ORM (Hibernate). Dengan cara ini, data lebih terstruktur, tersimpan permanen, dan bisa diubah tanpa mengedit program.
@@ -100,7 +102,8 @@ Secara keseluruhan, Pocket Guard membantu melacak arus kas harian, menjaga kesei
    e. Class SaldoEffect.Java yang terdapat di Package model
 
       <img width="349" height="113" alt="image" src="https://github.com/user-attachments/assets/bbbc5b5b-3912-4bab-bf7a-a381c89c71de" />
-      
+
+
 
       <img width="573" height="167" alt="image" src="https://github.com/user-attachments/assets/4e4f07e8-4652-4372-a376-1fce1639023b" />
 
