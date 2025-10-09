@@ -441,7 +441,8 @@ Fungsi ini membuka koneksi ke MySQL dari DB.get(), membuat Statement, lalu menge
   
 - `com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java` → CRUD pakai Hibernate Session
 
-  <img width="845" height="860" alt="image" src="https://github.com/user-attachments/assets/a7ca102d-3bdb-4330-933f-89eb92ce8fdf" />
+  <img width="837" height="869" alt="image" src="https://github.com/user-attachments/assets/8826bff1-dc43-4ac3-afbc-2325e6b3d22e" />
+
 
   >Bagian ini menunjuk ke com.mycompany.posttest5pbo.orm.repo.TransaksiRepository.java. File ini adalah lapisan repository yang menangani operasi database dengan Hibernate Session. Di sini tersedia metode-metode CRUD:
   >
